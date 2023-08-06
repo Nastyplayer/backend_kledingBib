@@ -3,16 +3,13 @@ package KledingBib.demo.service;
 
 import KledingBib.demo.models.Upload;
 import KledingBib.demo.repository.UploadRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -21,7 +18,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 
@@ -47,10 +43,9 @@ public class UploadService {
             throw new RuntimeException("Issue in creating file directory");
         }
 
-
     }
 
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file, String url) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
@@ -144,21 +139,6 @@ public class UploadService {
 //    }
 //}
 /////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

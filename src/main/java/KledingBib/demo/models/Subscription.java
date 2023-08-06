@@ -1,24 +1,20 @@
 package KledingBib.demo.models;
-import KledingBib.demo.dto.SubscriptionDto;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 
-@NoArgsConstructor
-@AllArgsConstructor
-
-@Getter
-@Setter
+//@NoArgsConstructor
+//@AllArgsConstructor
+//
+//@Getter
+//@Setter
 
 /*annotatie   DONE!!!!*/
 @Entity
@@ -26,38 +22,93 @@ import java.util.Objects;
 public class Subscription {
 
     @Id
-    //  @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //  @Column
+      @GeneratedValue(strategy = GenerationType.IDENTITY)
+      @Column
     private Long id;
-
-
-    private String type;
+    private String typeSubscription;
 
     private LocalDate expirationDate;
+   // private Subscription subscription;
 
-    public Subscription(long l, String subscription2, Object o) {
+
+    public Subscription() {
+
     }
 
-    public enum Status {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTypeSubscription() {
+        return typeSubscription;
+    }
+
+    public void setTypeSubscription(String typeSubscription) {
+        this.typeSubscription = typeSubscription;
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+ 
+
+
+
+    public Subscription(SubscriptionStatus Expire) {
+    }
+
+
+//    public Collection<Object> getSubscription() {
+//        return null;
+//    }
+
+    public Account getAccount() {
+        return account;
+    }
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    @OneToOne (targetEntity = Account.class, mappedBy = "subscription", cascade = {CascadeType.ALL}) //(mappedBy = "subscription")(cascade = {CascadeType.ALL})
+
+   // @JoinColumn(name = "account_id")
+    @JsonIgnore
+    private Account account;
+
+//    public Subscription getSubscription() {
+//
+//        return subscription;
+//    }
+
+    public enum SubscriptionStatus {
         ACTIVE,
         EXPIRE,
         CANCELED
     }
 
-    @ElementCollection(targetClass = Status.class)
-    @CollectionTable
+    public void setSubscriptionStatus(List<SubscriptionStatus> subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
+    }
+
+    public List<SubscriptionStatus> getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+
+    @ElementCollection(targetClass = SubscriptionStatus.class)
+   // @CollectionTable
     @Enumerated(EnumType.STRING)
-    List<Status> status;
+    @Fetch(FetchMode.JOIN)
+    List<SubscriptionStatus> subscriptionStatus;
 
-    @OneToOne
-    //         (orphanRemoval = true)
-    // @JoinTable(name = "subscriptions_account",
-    //       joinColumns = @JoinColumn(name = "subscription_id"),
-    //       inverseJoinColumns = @JoinColumn(name = "account_id"))
-    //  private
-
-
-    Account account;
 
 
     @Override
@@ -65,22 +116,15 @@ public class Subscription {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subscription subscription1 = (Subscription) o;
-        return Objects.equals(id, subscription1.id) && Objects.equals(type, subscription1.type) &&
-                Objects.equals(expirationDate, subscription1.expirationDate) && Objects.equals(status, subscription1.status) && Objects.equals(account, subscription1.account);
+        return Objects.equals(id, subscription1.id) && Objects.equals(typeSubscription, subscription1.typeSubscription) &&
+                Objects.equals(expirationDate, subscription1.expirationDate) &&
+                Objects.equals(subscriptionStatus, subscription1.subscriptionStatus) && Objects.equals(account, subscription1.account);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, expirationDate, status, account);
+        return Objects.hash(id, typeSubscription, expirationDate, subscriptionStatus, account);
     }
 
 }
-
-    //  public Collection<Object> getSubscription() {
-   //     return null;
- //   }
-
-    //  public Collection<Object> getSubscription() {
-   //     return null;
-  //  }}
 

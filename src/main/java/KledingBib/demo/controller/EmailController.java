@@ -20,6 +20,8 @@ public class EmailController {
         String status = emailRepository.sendMail(email);
         return status;
     }
+
+
     @PostMapping("/sendWithAttachment")
     public String sendWithAttachment(@RequestBody Email email) {
         String status = emailRepository.sendWithAttachment(email);

@@ -1,23 +1,17 @@
 package KledingBib.demo.controller;
 
-import KledingBib.demo.models.Upload;
-import KledingBib.demo.service.*;
 import KledingBib.demo.dto.ItemDto;
-
-import KledingBib.demo.service.UploadService;
-import KledingBib.demo.service.ItemService;
+import KledingBib.demo.exceptions.RecordNotFoundException;
+import KledingBib.demo.service.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import KledingBib.demo.service.AccountService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-
 
 import java.net.URI;
 import java.util.List;
@@ -64,6 +58,7 @@ public class ItemController {
     @GetMapping("/items/{id}")
     @Transactional
     public ResponseEntity<ItemDto> getItem(@PathVariable Long id) {
+
         return ResponseEntity.ok(itemService.getItem(id));
     }
 
@@ -98,20 +93,44 @@ public class ItemController {
         return ResponseEntity.ok().body(itemDto1);
     }
 
+
+ //////////////// nuevo/////////////
     @DeleteMapping("/items/{id}")
     public ResponseEntity<String> deleteItem(@PathVariable Long id) {
-        itemService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            itemService.deleteById(id);
+            return ResponseEntity.ok("Item deleted successfully.");
+        } catch (RecordNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
+
+    ///////////////oud/////////////
+
+//    @DeleteMapping("/items/{id}")
+//    public ResponseEntity<String> deleteItem(@PathVariable Long id) {
+//        itemService.deleteById(id);
+//        return ResponseEntity.noContent().build();
+//    }
+
+
     //  link photo to a item
-    @PostMapping("/items/{id}/photo")
-    public ResponseEntity<Object> assignPhotoToItem(@PathVariable("id") Long id, @RequestBody MultipartFile file) {
+    @PostMapping("/items/photo")
+    public ResponseEntity<Object> assignPhotoToItem(@Valid  @RequestBody MultipartFile file) {
         String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/download/")
                 .path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
-        String photo = UploadService.storeFile(file);
-        itemService.assignPhotoToItem(photo, id);
+        String photo = UploadService.storeFile(file, url);   ///url
+        itemService.assignPhotoToItem(photo);
+////////////////// oude met ID  zie ook bij service /////////////////////////
+  //      @PostMapping("/items/{id}/photo")
+//        public ResponseEntity<Object> assignPhotoToItem(@PathVariable("id") Long id, @RequestBody MultipartFile file) {
+//            String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/download/")
+//                    .path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
+//            String photo = UploadService.storeFile(file);
+//            itemService.assignPhotoToItem(photo, id);
+/////////////////////////////////////////////////////
 
         ///////////// from video
 //        Upload photo = uploadController.FileUpload(file);

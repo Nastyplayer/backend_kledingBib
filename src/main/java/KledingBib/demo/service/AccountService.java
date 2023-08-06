@@ -1,11 +1,12 @@
 package KledingBib.demo.service;
 
-
 import KledingBib.demo.dto.AccountDto;
 import KledingBib.demo.exceptions.RecordNotFoundException;
-import KledingBib.demo.models.*;
+import KledingBib.demo.models.Account;
+import KledingBib.demo.models.Email;
+import KledingBib.demo.models.Subscription;
+import KledingBib.demo.models.User;
 import KledingBib.demo.repository.*;
-import org.hibernate.action.internal.EntityAction;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,16 +26,21 @@ public class AccountService {
     private final SubscriptionRepository subscriptionRepository;
     private final UploadRepository uploadRepository;
     private final EmailService emailService;
+    private final SubscriptionService subscriptionService;
+    private Account savedaccount;
+    private UserService userDto;
 
 
     public AccountService(AccountRepository accountRepository, UserRepository userRepository, ItemRepository itemRepository,
                           OrderRepository orderRepository, SubscriptionRepository subscriptionRepository,
-                          UploadRepository uploadRepository, EmailService emailService) {
+                          UploadRepository uploadRepository, EmailService emailService, SubscriptionService subscriptionService) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
         this.orderRepository = orderRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.subscriptionService = subscriptionService;
+
         this.uploadRepository = uploadRepository;
         this.emailService = emailService;
 
@@ -49,8 +55,15 @@ public class AccountService {
             AccountDto accountDto = transferAccountToAccountDto(account);
             accountDtos.add(accountDto);
         }
-        return accountDtos;
+
+
+        return   accountDtos;
+
+
     }
+////  return   accountDtos;    55  bij exempel  (tvList)
+    //    return transferAccountListToAccountDtoList(accounts);
+
 
     // GetMapping by id, method for getting a Account by id
     public AccountDto getAccount(Long id) {
@@ -65,14 +78,39 @@ public class AccountService {
 
     // , method for adding a Account
     public Long createAccount(AccountDto accountDto) {
+
+
+
         Account newAccount;
         newAccount = transferAccountDtoToAccount(accountDto);
         Account savedAccount = accountRepository.save(newAccount);
 
-     //   addOrderToAccount(accountDto, savedAccount);
-     //   addSubscriptionToAccount(accountDto, savedAccount);
-      //  addUploadToAccount(accountDto, savedAccount);
-      //  addUserToAccount(accountDto, savedAccount);
+ ///////       nieuw///////
+        Subscription Expire = new Subscription(Subscription.SubscriptionStatus.EXPIRE);
+        Subscription newExpire = subscriptionRepository.save(Expire);
+        newExpire.setAccount(savedaccount);
+
+        Subscription Active = new Subscription(Subscription.SubscriptionStatus.ACTIVE);
+        Subscription newActive = subscriptionRepository.save(Active);
+        newActive.setAccount(savedaccount);
+
+        Subscription Canceled = new Subscription(Subscription.SubscriptionStatus.CANCELED);
+        Subscription newCanceled = subscriptionRepository.save(Canceled);
+        newCanceled.setAccount(savedaccount);
+
+//        addOrderToAccount(accountDto, savedAccount);
+ //       addSubscriptionToAccount(accountDto, savedAccount);
+//        addUploadToAccount(accountDto, savedAccount);
+//        addUserToAccount(accountDto, savedAccount);
+        User newUser = new User();
+        userRepository.save(newUser);
+        accountRepository.save(newAccount);
+        assignAccountToUser(newUser.getUsername(), newAccount.getUsername());
+        accountRepository.save(newAccount);
+        userRepository.save(newUser);
+
+        Email email = new Email("ormenojavier452@gmail.com", "Er is een nieuw verzonden");
+        this.emailService.sendMail(email);
 
         return savedAccount.getId();
     }
@@ -85,7 +123,7 @@ public class AccountService {
         if (accountRepository.findById(id).isPresent()) {
             Account accountToChange = accountRepository.findById(id).get();
             Account account1 = transferAccountDtoToAccount(accountDto);
-            account1.setId(accountToChange.getId());
+           account1.setId(accountToChange.getId());
 
             accountRepository.save(account1);
             return transferAccountToAccountDto(account1);
@@ -118,7 +156,12 @@ public class AccountService {
             if (accountDto.getSubscriptionInfo() != null) {
                 accountToUpdate.setSubscriptionInfo(accountDto.getSubscriptionInfo());
             }
-
+            if (accountDto.getEmail() != null) {
+                accountToUpdate.setEmail(accountDto.getEmail());
+            }
+            if (accountDto.getComment() != null) {
+                accountToUpdate.setComment(accountDto.getComment());
+            }
 
             Account savedAccount = accountRepository.save(accountToUpdate);
             return transferAccountToAccountDto(savedAccount);
@@ -138,8 +181,8 @@ public class AccountService {
 
             // deleting upload, subscriptions  first
         //    for (Upload upload : account1.getUploads()) {
-               Upload upload = account1.getUpload();
-                uploadRepository.delete(upload);
+            //   Upload upload = account1.getUpload();
+             //   uploadRepository.delete(upload);
        //     }
             Subscription subscription = account1.getSubscription();
 
@@ -157,17 +200,28 @@ public class AccountService {
     //////////////////////
 
     // Assign photo to a account
-     public void assignPhotoToAccount(String fileName, Long id) {
-        Optional<Account> optionalAccount = accountRepository.findById(id);
-         Optional<Upload> fileUploadResponse = uploadRepository.findByFileName(fileName);
-         if (optionalAccount.isPresent() && fileUploadResponse.isPresent()) {
-          Upload photo = fileUploadResponse.get();
-              Account account = optionalAccount.get();
-           account.setUpload(photo);
-             accountRepository.save(account);
-       }
-    }
+//     public void assignPhotoToAccount(String fileName, Long id) {
+//        Optional<Account> optionalAccount = accountRepository.findById(id);
+//         Optional<Upload> fileUploadResponse = uploadRepository.findByFileName(fileName);
+//         if (optionalAccount.isPresent() && fileUploadResponse.isPresent()) {
+//          Upload photo = fileUploadResponse.get();
+//              Account account = optionalAccount.get();
+//           account.setUpload(photo);
+//             accountRepository.save(account);
+//       }
+//    }
+    public void assignAccountToUser(String id, Long accountId) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        Optional<Account> optionalAccount = accountRepository.findById(accountId);
+        if (optionalUser.isPresent() && optionalAccount.isPresent()) {
+            User user = optionalUser.get();
+            Account account = optionalAccount.get();
+            account.setUser(user);
+            accountRepository.save(account);
+        } else {
+            throw new RecordNotFoundException();
 
+        }}
 
     //  methods
     //
@@ -177,8 +231,9 @@ public class AccountService {
         accountDto.setId(account.getId());
         accountDto.setUserInfo(account.getUserInfo());
         accountDto.setSubscriptionInfo(account.getSubscriptionInfo());
-
-
+        accountDto.setEmail(account.getEmail());
+        accountDto.setComment(account.getComment());
+//
         if (account.getUserInfo() != null) {
             accountDto.setUserInfo(account.getUserInfo());
         }
@@ -188,7 +243,9 @@ public class AccountService {
         if (account.getSubscription() != null) {
             accountDto.setSubscription(account.getSubscription());
         }
-
+//        if (account.getSubscription() != null) {
+//            accountDto.setSubscriptionDto(SubscriptionService.transferAccountToAccountDto(account.getSubscription()));
+//        }
         return accountDto;
     }
 /////////////////////////
@@ -202,66 +259,102 @@ public class AccountService {
         account.setId(accountDto.getId());
         account.setUserInfo(accountDto.getUserInfo());
         account.setSubscriptionInfo(accountDto.getSubscriptionInfo());
-
-        account.setSubscription((Subscription) accountDto.getSubscription());
-        account.setUpload((Upload) accountDto.getUpload());
+        account.setEmail(accountDto.getEmail());
+        account.setComment(accountDto.getComment());
+        account.setSubscription(accountDto.getSubscription());
+        account.setUpload(accountDto.getUpload());
 
         return account;
     }
 
 
 /////////////////////////
+///////////Dit is nieuw
+//    public List<AccountDto> transferAccountListToAccountDtoList(List<Account> accounts){
+//        List<AccountDto> accountDtoList = new ArrayList<>();
+//
+//        for(Account account : accounts) {
+//            AccountDto accountDto = transferAccountToAccountDto(account);
+//            if(account.getSubscription() != null){
+//                accountDto.setSubscriptionDto(subscriptionService.transferAccountToAccountDto(account.getSubscription()));
+//            }
+////            if(account.getRemoteController() != null){
+////                accountDto.setRemoteControllerDto(remoteControllerService.transferToDto(account.getRemoteController()));
+////            }
+//            accountDtoList.add(accountDto);
+//        }
+//        return accountDtoList;
+//    }
 
-    public List<Account> transferAccountDtoListToAccountList (List<AccountDto> usersdtos) {
-        List<Account> users = new ArrayList<>();
-        for (AccountDto usersdto : usersdtos) {
-            users.add(transferAccountDtoToAccount(usersdto));
-        }
-        return users;
-    }
+    ////////////////////////////////////////////////  dit stond ff uit
+//    public List<Account> transferAccountDtoListToAccountList (List<AccountDto> usersdtos) {
+//        List<Account> users = new ArrayList<>();
+//        for (AccountDto usersdto : usersdtos) {
+//            users.add(transferAccountDtoToAccount(usersdto));
+//        }
+//        return users;
+//    }
+//
+//    public void getAccount(String userInfo, String subscriptionInfo) {
+//    }
+//
 
-    public void getAccount(String userInfo, String subscriptionInfo) {
-    }
 
 
     // methods to add user, upload , account and subscription to these lists and connect to Account
-   // public void addUploadToAccount(AccountDto accountDto, Account account) {
-    //    for (Upload upload : accountDto.getUploads()) {
-     //       if (!upload.getUpload().isEmpty()) {
-       //         upload.setAccount(account);
-         //       uploadRepository.save(upload);
-          //  }
+
+//    public void addUploadToAccount(AccountDto accountDto, Account account) {
+//        for (Upload upload : accountDto.getUpload()) {
+//            if (!upload.getUpload().isEmpty()) {
+//                upload.setAccount(account);
+//                uploadRepository.save(upload);
+//            }
 //}
-   // }
-
-   // public void addOrderToAccount(AccountDto accountDto, Account account) {
-     //   for (Order order : accountDto.getOrders()) {
-     //       if (!order.getOrder().isEmpty()) {
-     //           order.setAccount(account);
-     //           orderRepository.save(order);
-     //       }
-   //     }
- //   /}
-
-  //  public void addSubscriptionToAccount(AccountDto accountDto, Account account) {
-  ///      for (Subscription subscription : accountDto.getSubscriptions()) {
- //           if (!subscription.getSubscription().isEmpty()) {
- //               subscription.setAccount(account);
-   //             subscriptionRepository.save(subscription);
-   //         }
-   //     }
-
 //    }
 
-  //  public void addUserToAccount(AccountDto accountDto, Account account) {
-  //      for (User user : accountDto.getUsers()) {
-    //        if (!user.getUser().isEmpty()) {
-       //         user.setAccounts(account);
-       //         userRepository.save(user);
-       //     }
-      //  }
+//    public void addOrderToAccount(AccountDto accountDto, Account account) {
+//        for (Order order : accountDto.getOrders()) {
+//            if (!order.getOrder().isEmpty()) {
+//                order.setAccount(account);
+//                orderRepository.save(order);
+//            }
+//        }
+//    }
+///////////////////////////////////////////////////////////////////// nieuw ///////////////
+//    public void addSubscriptionToAccount(AccountDto accountDto, Account account) {
+//       for (Subscription subscription : accountDto.getSubscriptions()) {
+//           if (!subscription.getSubscription().isEmpty()) {
+//               subscription.setAccount(account);
+//               subscriptionRepository.save(subscription);
+//           }
+//       }}
 
-  //  }
 
-
+///////////////////////////////////////////////////////////////////////
+//    public void addUserToAccount(AccountDto accountDto, Account account) {
+//        for (User user : accountDto.getUser()) {
+//            if (!user.getUser().isEmpty()) {
+//                user.setAccount(account);
+//                userRepository.save(user);
+//            }
+//        }
+ //   }
 }
+
+
+
+
+
+
+///////////////////   from subscription blablabla ///////////
+//    public Subscription(Long id, String typeSubscription, LocalDate expirationDate) {
+//        this.id = id;
+//        this.typeSubscription = typeSubscription;
+//        this.expirationDate = expirationDate;
+//    }
+
+//    public Subscription(long l, String subscription2, Object o) {
+//    }
+
+//    public Subscription(SubscriptionStatus expire) {
+//    }

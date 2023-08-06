@@ -2,20 +2,18 @@ package KledingBib.demo.config;
 
 
 import KledingBib.demo.filter.JwtRequestFilter;
-        import KledingBib.demo.service.CustomUserDetailsService;
-        import org.springframework.context.annotation.Bean;
-        import org.springframework.context.annotation.Configuration;
-
-        import org.springframework.http.HttpMethod;
-        import org.springframework.security.authentication.AuthenticationManager;
-        import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-        import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-        import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-        import org.springframework.security.config.http.SessionCreationPolicy;
-        import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-        import org.springframework.security.crypto.password.PasswordEncoder;
-        import org.springframework.security.web.SecurityFilterChain;
-        import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import KledingBib.demo.service.CustomUserDetailsService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -89,10 +87,12 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/subscriptions").hasAnyRole("ADMIN", "USER")
                 .requestMatchers(HttpMethod.GET, "/subscriptions/**").hasAnyRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/downloadAllFiles").permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/download/{fileName}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/files").permitAll()
+                .requestMatchers(HttpMethod.GET, "/upload").permitAll()
 
-
-
+                .requestMatchers(HttpMethod.POST, "/sendmail").permitAll()
                 .requestMatchers(HttpMethod.POST, "/items").permitAll()
                 .requestMatchers(HttpMethod.POST, "/upload").permitAll()
                 .requestMatchers(HttpMethod.POST, "/orders").hasAnyRole("ADMIN","USER")
@@ -107,13 +107,15 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/accounts/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/subscriptions/**").hasRole("ADMIN")
 
-
+                .requestMatchers(HttpMethod.DELETE, "/items").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/items/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/accounts/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/subscriptions/**").hasRole("ADMIN")
 
-
+                .requestMatchers(HttpMethod.PATCH, "/subscriptions/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/items/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/orders/**").hasRole("ADMIN")
                 //  a photo to a item
                 .requestMatchers(HttpMethod.POST, "/items/**").hasAnyRole("ADMIN", "USER")
 

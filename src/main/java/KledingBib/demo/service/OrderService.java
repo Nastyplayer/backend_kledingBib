@@ -1,9 +1,7 @@
 package KledingBib.demo.service;
 
 import KledingBib.demo.dto.OrderDto;
-
 import KledingBib.demo.exceptions.RecordNotFoundException;
-
 import KledingBib.demo.models.Order;
 import KledingBib.demo.repository.AccountRepository;
 import KledingBib.demo.repository.ItemRepository;
@@ -23,14 +21,17 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository UserRepository;
     private final AccountRepository AccountRepository;
-  
+    private final AccountService AccountService;
+
+
 
     public OrderService(OrderRepository orderRepository, ItemRepository itemRepository,
-                        UserRepository userRepository, AccountRepository accountRepository) {
+                        UserRepository userRepository, AccountRepository accountRepository, AccountService accountService) {
         this.orderRepository = orderRepository;
         this.itemRepository = itemRepository;
         this.UserRepository = userRepository;
         this.AccountRepository = accountRepository;
+        this.AccountService = accountService;
 
     }
 
@@ -96,6 +97,11 @@ public class OrderService {
             if (orderDto.getDateInfo() != null) {
                 orderToUpdate.setDateInfo(orderDto.getDateInfo());
             }
+            if (orderDto.getUser() != null) {
+                orderToUpdate.setUser(orderDto.getUser());
+            }
+
+
 
             Order savedOrder = orderRepository.save(orderToUpdate);
             return transferOrderToOrderDto(savedOrder);
@@ -120,6 +126,7 @@ public class OrderService {
     private OrderDto transferOrderToOrderDto(Order order) {
         OrderDto orderDto = new OrderDto();
         orderDto.setUser(order.getUser());
+        orderDto.setItem(order.getItem());
         orderDto.setId(order.getId());
         orderDto.setItemInfo(order.getItemInfo());
         orderDto.setDateInfo(order.getDateInfo());
@@ -127,12 +134,16 @@ public class OrderService {
         if (order.getUser() != null) {
             orderDto.setUser(order.getUser());
         }
+
+
         return orderDto;
     }
 
     private Order transferOrderDtoToOrder(OrderDto orderDto) {
+
         Order order = new Order();
         order.setUser(orderDto.getUser());
+        order.setItem(orderDto.getItem());
         order.setId(orderDto.getId());
         order.setItemInfo(orderDto.getItemInfo());
         order.setDateInfo(orderDto.getDateInfo());
@@ -141,13 +152,13 @@ public class OrderService {
         return order;
     }
 
-    public List<Order> transferOrderDtoListToOrderList(List<OrderDto> ordersdtos) {
-        List<Order> orders = new ArrayList<>();
-        for (OrderDto ordersdto : ordersdtos) {
-            orders.add(transferOrderDtoToOrder(ordersdto));
-        }
-        return orders;
-    }
+//    public List<Order> transferOrderDtoListToOrderList(List<OrderDto> ordersdtos) {
+//        List<Order> orders = new ArrayList<>();
+//        for (OrderDto ordersdto : ordersdtos) {
+//            orders.add(transferOrderDtoToOrder(ordersdto));
+//        }
+//        return orders;
+ //   }
 }
   /// // public void assignPhotoToOrder(String photo, Long id) {
   //  //}

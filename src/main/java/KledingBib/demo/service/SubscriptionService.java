@@ -7,7 +7,9 @@ import KledingBib.demo.exceptions.RecordNotFoundException;
 
 import KledingBib.demo.models.Account;
 import KledingBib.demo.models.Subscription;
+import KledingBib.demo.repository.AccountRepository;
 import KledingBib.demo.repository.SubscriptionRepository;
+import org.hibernate.engine.spi.SessionDelegatorBaseImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,8 +21,13 @@ public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
 
-    public SubscriptionService(SubscriptionRepository subscriptionRepository) {
+    private final AccountRepository AccountRepository;
+    private Account Account;
+    private SessionDelegatorBaseImpl accountRepository;
+
+    public SubscriptionService(SubscriptionRepository subscriptionRepository, AccountRepository accountRepository) {
         this.subscriptionRepository = subscriptionRepository;
+        this.AccountRepository = accountRepository;
     }
 
         public List<SubscriptionDto> getAllSubscriptions () {
@@ -28,8 +35,10 @@ public class SubscriptionService {
             ArrayList<SubscriptionDto> subscriptionDtos = new ArrayList<>();
             for (Subscription Subscription : subscriptions) {
                 SubscriptionDto subscriptionDto = transferSubscriptionToSubscriptionDto(Subscription);
-                subscriptionDtos.add(subscriptionDto);
+                subscriptionDtos.add(transferAccountToAccountDto(Subscription));
             }
+
+
             return subscriptionDtos;
         }
 
@@ -47,10 +56,20 @@ public class SubscriptionService {
         }
     }
 
-    public Long createSubscription(SubscriptionDto subscriptionDto) {
+    public Long createSubscription(SubscriptionDto subscriptionDto, Long id) {
         Subscription newSubscription;
         newSubscription = transferSubscriptionDtoToSubscription(subscriptionDto);
         Subscription savedSubscription = subscriptionRepository.save(newSubscription);
+
+
+        Optional<Optional<Account>> optionalaccount = Optional.ofNullable(AccountRepository.findById(id));
+        if (optionalaccount.isPresent()){
+            Optional<Account> account = optionalaccount.get();
+         
+            newSubscription.setAccount(Account);
+        }
+        addAccountToSubscription(subscriptionDto, savedSubscription);
+
         return savedSubscription.getId();
     }
 //////
@@ -80,11 +99,14 @@ public class SubscriptionService {
             Subscription subscription1 = transferSubscriptionDtoToSubscription(subscriptionDto);
             subscription1.setId(subscriptionToUpdate.getId());
 //////
-            if (subscriptionDto.getType() != null) {
-                subscriptionToUpdate.setType(subscriptionDto.getType());
+            if (subscriptionDto.getTypeSubscription() != null) {
+                subscriptionToUpdate.setTypeSubscription(subscriptionDto.getTypeSubscription());
             }
             if (subscriptionDto.getExpirationDate() != null) {
                 subscriptionToUpdate.setExpirationDate(subscriptionDto.getExpirationDate());
+            }
+            if (subscriptionDto.getSubscriptionStatus() != null) {
+                subscriptionToUpdate.setSubscriptionStatus(subscriptionDto.getSubscriptionStatus());
             }
 
             Subscription savedSubscription = subscriptionRepository.save(subscriptionToUpdate);
@@ -111,11 +133,35 @@ public class SubscriptionService {
         SubscriptionDto subscriptionDto = new SubscriptionDto();
         subscriptionDto.setAccount(subscription.getAccount());
         subscriptionDto.setId(subscription.getId());
-        subscriptionDto.setType(subscription.getType());
+        subscriptionDto.setTypeSubscription(subscription.getTypeSubscription());
         subscriptionDto.setExpirationDate(subscription.getExpirationDate());
-
+       subscriptionDto.setSubscriptionStatus(subscription.getSubscriptionStatus());
         if (subscription.getAccount() != null) {
             subscriptionDto.setAccount(subscription.getAccount());
+        }
+//        if (subscription.getSubscriptionStatus() != null) {
+//            subscriptionDto.setSubscriptionStatus(subscription.getSubscriptionStatus());
+//        }
+        return subscriptionDto;
+    }
+
+
+    public static SubscriptionDto transferAccountToAccountDto(Subscription subscription){
+       SubscriptionDto subscriptionDto = new SubscriptionDto();
+
+        subscriptionDto.setId(subscription.getId());
+        subscriptionDto.setAccount(subscription.getAccount());
+        subscriptionDto.setTypeSubscription(subscription.getTypeSubscription());
+        subscriptionDto.setExpirationDate(subscription.getExpirationDate());
+//        subscriptionDto.setSubscriptionInfo(subscription.getSubscriptionInfo());
+//        subscriptionDto.set(subscription.getUserInfo());
+//        subscriptionDto.setEmail(subscription.getEmail());
+
+//        if (subscription.getAccount() != null) {
+//            subscriptionDto.setAccount(subscription.getAccount());
+//        }
+        if (subscription.getSubscriptionStatus() != null) {
+            subscriptionDto.setSubscriptionStatus(subscription.getSubscriptionStatus());
         }
         return subscriptionDto;
     }
@@ -124,12 +170,25 @@ public class SubscriptionService {
         Subscription subscription = new Subscription();
         subscription.setAccount(subscriptionDto.getAccount());
         subscription.setId(subscriptionDto.getId());
-        subscription.setType(subscriptionDto.getType());
+        subscription.setTypeSubscription(subscriptionDto.getTypeSubscription());
         subscription.setExpirationDate(subscriptionDto.getExpirationDate());
-
+        subscription.setSubscriptionStatus(subscriptionDto.getSubscriptionStatus());
+//        subscriptionDto.setSubscriptionInfo(subscription.getSubscriptionInfo());
+//        subscriptionDto.set(subscription.getUserInfo());
+//       subscriptionDto.setEmail(subscription.getEmail());
         return subscription;
     }
 
+
+    public void addAccountToSubscription(SubscriptionDto subscriptionDto, Subscription subscription) {
+        for (Account account : subscriptionDto.getAccounts()) {
+            if (!account.getAccount().isEmpty()) {
+                account.setSubscription(subscription);
+                accountRepository.save(account);
+            }
+        }
+    }
+    
     public List<Subscription> transferSubscriptionDtoListToSubscriptionList(List<SubscriptionDto> subscriptionsdtos) {
         List<Subscription> subscriptions = new ArrayList<>();
         for (SubscriptionDto subscriptionsdto : subscriptionsdtos) {
@@ -139,4 +198,5 @@ public class SubscriptionService {
         }
         return subscriptions;
     }
+
 }
