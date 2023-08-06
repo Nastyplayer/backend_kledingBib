@@ -1,7 +1,10 @@
 package KledingBib.demo.dto;
 
-import KledingBib.demo.models.*;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import KledingBib.demo.models.Account;
+import KledingBib.demo.models.Authority;
+import KledingBib.demo.models.Item;
+import KledingBib.demo.models.Order;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 
@@ -24,33 +26,43 @@ public class UserDto {
   //  private Long id;
     public String username;
     public String password;
-   public Boolean enabled;
-    public String apikey;
-    public String email;
+
+   public String email;
+//    public String comment;
+
+  public UserDto(String username, String password,  String email ) {
+     // this.id = id;
+      this.username = username;
+      this.password = password;
+
+   this.email = email;
+//      this.comment = comment;
 
 
-  // List<User.Tags> tags;
-
+  }
 
     @JsonSerialize
     public Set<Authority> authorities;
 
-    @JsonIncludeProperties({"id", "nameInfo"})
-    private List<Item> items;
 
 
-    @JsonIncludeProperties({"id", "date", "itemInfo"})
-    private List<Order> orders;
+  //@JsonIncludeProperties({"id", "nameInfo"})
+  @JsonIgnore
+  public
+  List<Item> item;
 
 
-    @JsonIncludeProperties({"id", "user", "subscription"})
-    private Account account;
+  //  @JsonIncludeProperties({"id", "date", "itemInfo"})
+  @JsonIgnore
+  public List<Order> order;
+
+
+   // @JsonIncludeProperties({"id", "userInfo", "subscriptionInfo"})
+   @JsonIgnore
+    Account account;
 
 
 
-    // private Object order;
- //   private Object item;
-  //  private Object account;
 
 
 //    @Override

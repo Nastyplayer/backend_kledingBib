@@ -7,6 +7,7 @@ import KledingBib.demo.service.AccountService;
 import KledingBib.demo.service.SubscriptionService;
 
 
+import KledingBib.demo.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +26,13 @@ import java.util.List;
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final AccountService AccountService;
+    private final UserService UserService;
 
 
-
-
-
-    public SubscriptionController(SubscriptionService subscriptionService, AccountController AccountController, AccountService AccountService) {
+    public SubscriptionController(SubscriptionService subscriptionService, UserService userService, AccountController AccountController, AccountService AccountService) {
         this.subscriptionService = subscriptionService;
         this.AccountService = AccountService;
+        this.UserService = userService;
     }
 
 
@@ -50,13 +50,13 @@ public class SubscriptionController {
     }
 
     @PostMapping("/subscriptions")
-    public ResponseEntity<?> createSubscription(@Valid @RequestBody SubscriptionDto subscriptionDto, BindingResult br) {
+    public ResponseEntity<?> createSubscription(@Valid @RequestBody SubscriptionDto subscriptionDto, Long id, BindingResult br) {
         if (br.hasErrors()) {
             String errorString = getErrorString(br);
 
             return new ResponseEntity<>(errorString, HttpStatus.BAD_REQUEST);
         } else {
-            Long createdId = subscriptionService.createSubscription(subscriptionDto);
+            Long createdId = subscriptionService.createSubscription(subscriptionDto, id);
             URI uri = URI.create(ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/subscriptions/" + createdId)
@@ -86,9 +86,6 @@ public class SubscriptionController {
         subscriptionService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
 }
 
 

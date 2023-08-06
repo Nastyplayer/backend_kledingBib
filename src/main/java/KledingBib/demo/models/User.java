@@ -1,4 +1,5 @@
 package KledingBib.demo.models;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,32 +23,43 @@ public class User {
 
 
     @Id
-   /// @GeneratedValue(strategy = GenerationType.IDENTITY)
-   // @Column
-   // private Long id;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column
+ //   private Long id;
     @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false, length = 255)
     private String password;
-    public String apikey;
-
-    @Column(nullable = false)
-    private boolean enabled = true;
 
     @Column
     private String email;
 
+//    @Column(nullable = false)
+//    private boolean enabled = true;
+//    public String apikey;
 
+//    @Column
+//    public String comment;
 
+    public User ( String username, String password,  String email) {
 
+        this.username = username;
+        this.password = password;
+        this.email = email;
+
+    }
 
     // RELATIES
   @OneToMany(mappedBy = "user")
-    private List<Item> items;
-  @OneToMany(mappedBy = "user")  //    , cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
-  @OneToOne(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+   List<Item> item;
+
+  @OneToMany( fetch = FetchType.EAGER,mappedBy = "user")
+  @JsonIgnore
+ List<Order> order;
+
+  @OneToOne(targetEntity = Account.class, mappedBy = "user")
     Account account;
 
 
@@ -76,9 +88,12 @@ public class User {
         this.authorities.remove(authority);
     }
 
+   // public Collection<Object> getUser() {
+  ///      return null;
+ //   }
 
 
-  //  public void addItem(Item item)  { this.items.add(item);}
+    //  public void addItem(Item item)  { this.items.add(item);}
 
   //  public void addOrder(Order order){
    //     this.orders.add(order);

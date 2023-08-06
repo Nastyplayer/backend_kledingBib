@@ -5,14 +5,12 @@ import KledingBib.demo.exceptions.RecordNotFoundException;
 import KledingBib.demo.models.Authority;
 import KledingBib.demo.models.User;
 import KledingBib.demo.repository.UserRepository;
-import KledingBib.demo.utils.RandomStringGenerator;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /*moest hier niet een annotatie? DONE!!!*/
@@ -21,6 +19,7 @@ public class UserService {
     /*inject de juiste repository  DONE!!!*/
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -35,27 +34,33 @@ public class UserService {
         }
         return collection;
     }
-
     public UserDto getUser(String username) {
-        UserDto userDto;  // = new UserDto();
-        Optional<User> user = userRepository.findById(username);
-        if (user.isPresent()){
-            userDto = fromUser(user.get());
-        }else {
-            throw new UsernameNotFoundException(username);
-        }
-        return userDto;
+        return userRepository.findById(username)
+                .map(this::fromUser)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-   // public boolean userExists(String username) {
-   //     return userRepository.existsById(username);
-  //  }
+//    public UserDto getUser(String username) {
+//        UserDto userDto;  // = new UserDto();
+//        Optional<User> user = userRepository.findById(username);
+//        if (user.isPresent()) {
+//            userDto = fromUser(user.get());
+//        } else {
+//            throw new UsernameNotFoundException(username);
+//        }
+//        return userDto;
+//    }
+//
+//    public boolean userExists(String username) {
+//        return userRepository.existsById(username);
+//}
 
     public String createUser(UserDto userDto) {
-        String randomString = RandomStringGenerator.generateAlphaNumeric(20);
-       userDto.setApikey(randomString);
+      //  String randomString = RandomStringGenerator.generateAlphaNumeric(20);
+     //  userDto.setApikey(randomString);
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User newUser = userRepository.save(toUser(userDto));
+        newUser = userRepository.save(newUser);
         return newUser.getUsername();
     }
 
@@ -68,12 +73,31 @@ public class UserService {
         User user = userRepository.findById(username).get();
 
         user.setPassword(newUser.getPassword());
-         if (newUser.getEnabled() != null) {
-             user.setEnabled(newUser.getEnabled());
-         }
+//         if (newUser.getEnabled() != null) {
+//             user.setEnabled(newUser.getEnabled());
+//         }
 
         userRepository.save(user);
     }
+
+    public void patchUser(String username, UserDto changeUser) {
+        if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
+        User user = userRepository.findById(username).get();
+        if (changeUser.getPassword() != "") {
+            user.setPassword(passwordEncoder.encode(changeUser.getPassword()));
+        }
+//        if (changeUser.getEnabled() != null) {
+//            user.setEnabled(changeUser.getEnabled());
+//        }
+//
+//        ///// apikey  blijft
+        if (changeUser.getEmail() != "") {
+            user.setEmail(changeUser.getEmail());
+        }
+        userRepository.save(user);
+    }
+
+
 
     public Set<Authority> getAuthorities(String username) {
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
@@ -98,16 +122,21 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public static UserDto fromUser(User user){
+    public UserDto fromUser(User user){
 
         var userDto = new UserDto();
-
+        userDto.order = user.getOrder();
+        userDto.item = user.getItem();
         userDto.username = user.getUsername();
         userDto.password = user.getPassword();
-        userDto.enabled = user.isEnabled();
-        userDto.apikey = user.getApikey();
-        userDto.email = user.getEmail();
+//        userDto.enabled = user.isEnabled();
+//        userDto.apikey = user.getApikey();
+     userDto.email = user.getEmail();
+//        userDto.comment = user.getComment();
         userDto.authorities = user.getAuthorities();
+        if(userDto.getAccount()== null) {
+            userDto.setAccount(user.getAccount());
+        }
 
         return userDto;
     }
@@ -115,14 +144,25 @@ public class UserService {
     public User toUser(UserDto userDto) {
 
         var user = new User();
-
+        user.setOrder(userDto.getOrder());
+        user.setItem(userDto.getItem());
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
-        user.setEnabled(userDto.getEnabled());
-        user.setApikey(userDto.getApikey());
-        user.setEmail(userDto.getEmail());
+        if(userDto.getAccount()!=null) {
+            user.setAccount(userDto.getAccount());
+        }
+
+
+//        user.setApikey(userDto.getApikey());
+         user.setEmail(userDto.getEmail());
+//        user.setComment(userDto.getComment());
+//        Boolean enabled = userDto.getEnabled();
+//        boolean enabledValue = Objects.requireNonNullElse(enabled, false).booleanValue();
+//        user.setEnabled(enabledValue);
 
         return user;
     }
+
+
 
 }

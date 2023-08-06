@@ -5,7 +5,6 @@ import KledingBib.demo.repository.AccountRepository;
 import KledingBib.demo.repository.SubscriptionRepository;
 import KledingBib.demo.service.AccountService;
 import KledingBib.demo.service.UploadService;
-
 import KledingBib.demo.service.UserService;
 import jakarta.validation.Valid;
 import org.hibernate.action.internal.EntityAction;
@@ -13,13 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 
 
@@ -73,7 +69,7 @@ public class AccountController {
             URI uri = URI.create(ServletUriComponentsBuilder
                     // URI uri = ServletUriComponentsBuilder   //
                     .fromCurrentRequest()
-                    .path("/accounts/" + createdId)
+                   .path("/accounts/" + createdId)
                     //.path("/{id}")
                     // .buildAndExpand(createdId)
                     // .toUri();

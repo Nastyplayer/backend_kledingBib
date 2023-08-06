@@ -2,9 +2,7 @@ package KledingBib.demo.dto;
 
 import KledingBib.demo.models.Account;
 import KledingBib.demo.models.Subscription;
-
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,34 +25,75 @@ public class SubscriptionDto {
     @Id
     private Long id;
 
-    private String type;
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//    public String getTypeSubscription() {
+//        return typeSubscription;
+//    }
+//
+//    public void setTypeSubscription(String typeSubscription) {
+//        this.typeSubscription = typeSubscription;
+//    }
+//
+//    public LocalDate getExpirationDate() {
+//        return expirationDate;
+//    }
+//
+//    public void setExpirationDate(LocalDate expirationDate) {
+//        this.expirationDate = expirationDate;
+//    }
+
+    private String typeSubscription;
 
     private LocalDate expirationDate;
 
-    List<Subscription.Status> status;
+
+//    public List<Subscription.SubscriptionStatus> getSubscriptionStatus() {
+//        return subscriptionStatus;
+//    }
+//
+//    public void setSubscriptionStatus(List<Subscription.SubscriptionStatus> subscriptionStatus) {
+//        this.subscriptionStatus = subscriptionStatus;
+//    }
+
+    List<Subscription.SubscriptionStatus> subscriptionStatus;
+
+//    public Account [] getAccounts() {
+//        return new account [0];
+//    }
+//
+//    public void setAccount(Account account) {
+//        this.account = account;
+//    }
 
     @JsonIncludeProperties({"id", "userInfo", "subscriptionInfo"})
     private Account account;
 
-    public SubscriptionDto(long l, String subscription3, Object o) {
-    }
-    //private Object account;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SubscriptionDto subscriptionDto1 = (SubscriptionDto) o;
-        return Objects.equals(id, subscriptionDto1.id) && Objects.equals(type, subscriptionDto1.type) &&
-                Objects.equals(expirationDate, subscriptionDto1.expirationDate) && Objects.equals(status, subscriptionDto1.status)
-                && Objects.equals(account, subscriptionDto1.account);
+        SubscriptionDto that = (SubscriptionDto) o;
+        return Objects.equals(id, that.id) && Objects.equals(typeSubscription, that.typeSubscription) &&
+                Objects.equals(expirationDate, that.expirationDate) && Objects.equals(subscriptionStatus, that.subscriptionStatus)
+                && Objects.equals(account, that.account);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, expirationDate, status, account);
+        return Objects.hash(id, typeSubscription, expirationDate, subscriptionStatus, account);
     }
 
+    public Account[] getAccounts() {
+        return new Account[0];
+    }
 }
 
 

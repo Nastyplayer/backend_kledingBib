@@ -6,10 +6,7 @@ import KledingBib.demo.dto.UploadWithItemDto;
 import KledingBib.demo.models.Upload;
 import KledingBib.demo.service.ItemService;
 import KledingBib.demo.service.UploadService;
-
 import jakarta.servlet.http.HttpServletRequest;
-
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +35,7 @@ public class UploadController {
 
 
     @GetMapping("/download/{fileName}")
-    ResponseEntity<Resource> DownLoadFile(@PathVariable String id, HttpServletRequest request) {
+    ResponseEntity<Resource> DownLoadFile(@PathVariable HttpServletRequest request) {     //String id,
         Resource resource = service.downLoadFile(id);      //(fileName);
 
         String mimeType;
@@ -56,7 +51,7 @@ public class UploadController {
 
     @PostMapping("/upload")
 
-    public Upload FileUpload(@RequestParam("upload") MultipartFile upload) {
+    Upload FileUpload(@RequestParam("upload") MultipartFile upload) {
         // Hier  url. example "http://localhost:8083/download/naam.jpg"
 
 
@@ -64,11 +59,14 @@ public class UploadController {
                 path(Objects.requireNonNull(upload.getOriginalFilename())).toUriString();  //old!!
 
         String textType = upload.getOriginalFilename();
-        String fileName = service.storeFile(upload);
+        String fileName = service.storeFile(upload, url);
 
 
         return new Upload(fileName, textType, url);
     }
+
+
+
 
     // Nieuwe methode: download alle bestanden
 //    @GetMapping("/downloadAllFiles")

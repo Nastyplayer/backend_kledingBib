@@ -23,4 +23,6 @@ public class Email {
         this.subject = subject;
     }
 
+    public Email(String s, String er_is_een_nieuw_verzonden) {
+    }
 }
