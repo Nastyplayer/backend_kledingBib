@@ -1,13 +1,11 @@
 package KledingBib.demo.controller;
 
 import KledingBib.demo.dto.UserDto;
-
 import KledingBib.demo.exceptions.BadRequestException;
 import KledingBib.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 
 import java.net.URI;
 import java.util.List;
@@ -58,6 +56,10 @@ public class UserController {
 
         return ResponseEntity.created(location).build();
     }
+
+
+
+
 
     @PutMapping(value = "/users/{username}")
     public ResponseEntity<UserDto> updateUser(@PathVariable("username") String username, @RequestBody UserDto userDto) {

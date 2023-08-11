@@ -3,6 +3,7 @@ package KledingBib.demo.service;
 import KledingBib.demo.dto.ItemDto;
 import KledingBib.demo.exceptions.RecordNotFoundException;
 import KledingBib.demo.models.Item;
+import KledingBib.demo.models.Order;
 import KledingBib.demo.models.Upload;
 import KledingBib.demo.repository.ItemRepository;
 import KledingBib.demo.repository.OrderRepository;
@@ -28,6 +29,7 @@ public class ItemService {
     private UploadRepository uploadRepository;
     private Item item;
     private SessionDelegatorBaseImpl orderRepository;
+    private List<Order> Order;
 
     public ItemService(ItemRepository itemRepository, OrderRepository orderRepository, UserRepository userRepository, UploadRepository uploadRepository, UploadRepository uploadRepository2) {
 
@@ -66,8 +68,16 @@ public class ItemService {
         Item newItem;
         newItem = transferItemDtoToItem(itemDto);
         Item savedItem = itemRepository.save(newItem);
-        //addOrderToItem(itemDto, savedItem);
+//        addOrderToItem(itemDto, savedItem);
 
+//        Optional<Optional<Order>> optionalorder = Optional.ofNullable(OrderRepository.findById(id));
+//        if (optionalorder.isPresent()){
+//            Optional<Order> order = optionalorder.get();
+//
+//            newItem.setOrder(Order);
+//        }
+//        addOrderToItem(itemDto, savedItem);
+        ////////
         return savedItem.getId();
     }
 
@@ -163,13 +173,15 @@ public class ItemService {
         itemDto.setUser(item.getUser());
         itemDto.setId(item.getId());
         itemDto.setNameInfo(item.getNameInfo());
-        itemDto.setOrder(item.getOrder());
+        //     itemDto.setOrder(item.getOrder());
 
         if (item.getUser() != null) {
             itemDto.setUser(item.getUser());
         }
         if (item.getOrder() != null) {
-            itemDto.setOrder(item.getOrder());
+            List<Order> orderList = new ArrayList<>();
+            orderList.add(item.getOrder());
+            itemDto.setOrder(orderList);
         }
         if (item.getTags() != null) {
             itemDto.setTags(item.getTags());
@@ -187,7 +199,7 @@ public class ItemService {
         item.setId(itemDto.getId());
         item.setNameInfo(itemDto.getNameInfo());
         item.setTags(itemDto.getTags());
-        item.setOrder(itemDto.getOrder());
+        item.setOrder((Order)itemDto.getOrder());
         item.setUpload(itemDto.getUpload());
 
         return item;
@@ -201,7 +213,7 @@ public class ItemService {
         return users;
     }
 
-
+}
 
 //    public static void assignOrderToItem(String id, String itemId) {
 //        Optional<Order> optionalOrder = orderRepository.findById(id);
@@ -226,20 +238,13 @@ public class ItemService {
 
 
 
-
-
-
-
-
-////// deze werkt//////////////////////////
+//// deze werkt//////////////////////////
 //    public void addOrderToItem(ItemDto itemDto, Item item) {
 //        for (Order order : itemDto.getOrder()) {
 //            if (!order.getOrder().isEmpty()) {
-//             List<KledingBib.demo.models.Item> List = null;
+//             List<Item> List = null;
 //                order.setItem(List);
 //                orderRepository.save(order);
 //            }
 //        }
 //    }
-}
-

@@ -49,7 +49,7 @@ public class ItemController {
 
     public ResponseEntity<List<ItemDto>> getAllItems() {
 
-   return ResponseEntity.ok(itemService.getAllItems());
+        return ResponseEntity.ok(itemService.getAllItems());
     }
 
 
@@ -94,7 +94,7 @@ public class ItemController {
     }
 
 
- //////////////// nuevo/////////////
+    //////////////// nuevo/////////////
     @DeleteMapping("/items/{id}")
     public ResponseEntity<String> deleteItem(@PathVariable Long id) {
         try {
@@ -124,7 +124,7 @@ public class ItemController {
         String photo = UploadService.storeFile(file, url);   ///url
         itemService.assignPhotoToItem(photo);
 ////////////////// oude met ID  zie ook bij service /////////////////////////
-  //      @PostMapping("/items/{id}/photo")
+        //      @PostMapping("/items/{id}/photo")
 //        public ResponseEntity<Object> assignPhotoToItem(@PathVariable("id") Long id, @RequestBody MultipartFile file) {
 //            String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/download/")
 //                    .path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
@@ -135,7 +135,12 @@ public class ItemController {
         ///////////// from video
 //        Upload photo = uploadController.FileUpload(file);
 //        itemService.assignPhotoToItem(photo.getFileName(), id);
-       ////////////////////////////
+        ////////////////////////////
         return ResponseEntity.noContent().build();
     }
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

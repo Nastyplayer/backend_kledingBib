@@ -38,18 +38,15 @@ public class Order {
         this.dateInfo = dateInfo;
     }
 
-
-
+    public Order getOrder() {
+        return null;
+    }
     public User getUser() {
         return user;
     }
-
     public void setUser(User user) {
         this.user = user;
     }
-//  public String userUsername;
-
-
     public void setItem(List<Item> item) {
         this.item = item;
     }
@@ -67,31 +64,13 @@ public class Order {
 
 
     @ManyToOne(cascade = CascadeType.ALL)
-   // @JsonIgnore
-   // @JoinColumn(name = "user_id")
     private User user;
 
 
+//    public boolean isEmpty() {
+//        return false;
+//    }
 }
-
-
-    /// item als entiteit en attribut??? check!!!
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Order order1 = (Order) o;
-//        return Objects.equals(id, order1.id) && Objects.equals(itemInfo, order1.itemInfo)
-//                && Objects.equals(dateInfo, order1.dateInfo) && Objects.equals(user, order1.user)
-//                && Objects.equals(items, order1.items) && Objects.equals(itemId, order1.itemId);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, itemInfo, dateInfo, user, items, itemId);
-//    }
-
-
 
 
 

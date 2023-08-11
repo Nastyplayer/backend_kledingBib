@@ -25,6 +25,8 @@ public class SubscriptionService {
     private Account Account;
     private SessionDelegatorBaseImpl accountRepository;
 
+
+
     public SubscriptionService(SubscriptionRepository subscriptionRepository, AccountRepository accountRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.AccountRepository = accountRepository;
@@ -56,16 +58,17 @@ public class SubscriptionService {
         }
     }
 
-    public Long createSubscription(SubscriptionDto subscriptionDto, Long id) {
+    public Long createSubscription(SubscriptionDto subscriptionDto){
         Subscription newSubscription;
         newSubscription = transferSubscriptionDtoToSubscription(subscriptionDto);
         Subscription savedSubscription = subscriptionRepository.save(newSubscription);
 
 
-        Optional<Optional<Account>> optionalaccount = Optional.ofNullable(AccountRepository.findById(id));
+
+        Optional<Optional<Account>> optionalaccount = Optional.ofNullable(AccountRepository.findById(savedSubscription.getAccount().getId()));
         if (optionalaccount.isPresent()){
             Optional<Account> account = optionalaccount.get();
-         
+
             newSubscription.setAccount(Account);
         }
         addAccountToSubscription(subscriptionDto, savedSubscription);

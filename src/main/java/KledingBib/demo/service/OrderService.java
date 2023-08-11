@@ -24,7 +24,6 @@ public class OrderService {
     private final AccountService AccountService;
 
 
-
     public OrderService(OrderRepository orderRepository, ItemRepository itemRepository,
                         UserRepository userRepository, AccountRepository accountRepository, AccountService accountService) {
         this.orderRepository = orderRepository;
@@ -46,9 +45,7 @@ public class OrderService {
         return orderDtos;
     }
 
-//    private OrderDto transferOrderToOrderDto(Order order) {
-//        return null;
-//    }
+
 
     public OrderDto getOrder(Long id) {
         Optional<Order> optionalOrder = orderRepository.findById(id);
@@ -64,14 +61,15 @@ public class OrderService {
         Order newOrder;
         newOrder = transferOrderDtoToOrder(orderDto);
         Order savedOrder = orderRepository.save(newOrder);
+
+     //   addItemToOrder(orderDto, savedOrder);
+
         return savedOrder.getId();
     }
 
-    //////
-    // private Order transferItemDtoToItem(OrderDto itemDto) {
-    //    return null;
-    // }
-    //////
+
+
+
     public OrderDto putOrder(Long id, OrderDto orderDto) {
         {
             if (orderRepository.findById(id).isPresent()) {
@@ -100,7 +98,6 @@ public class OrderService {
             if (orderDto.getUser() != null) {
                 orderToUpdate.setUser(orderDto.getUser());
             }
-
 
 
             Order savedOrder = orderRepository.save(orderToUpdate);
@@ -150,16 +147,5 @@ public class OrderService {
 
 
         return order;
-    }
-
-//    public List<Order> transferOrderDtoListToOrderList(List<OrderDto> ordersdtos) {
-//        List<Order> orders = new ArrayList<>();
-//        for (OrderDto ordersdto : ordersdtos) {
-//            orders.add(transferOrderDtoToOrder(ordersdto));
-//        }
-//        return orders;
- //   }
-}
-  /// // public void assignPhotoToOrder(String photo, Long id) {
-  //  //}
+    }}
 

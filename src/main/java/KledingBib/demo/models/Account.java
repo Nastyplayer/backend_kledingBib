@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
-import java.util.Objects;
 
 
 @NoArgsConstructor
@@ -42,7 +41,7 @@ public class Account  {
         this.subscription = subscription;
     }
 
-    @OneToOne   //(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne  ( mappedBy = "account")  //(cascade = CascadeType.ALL, orphanRemoval = true)
     private Subscription subscription;
 
     public Upload getUpload() {
@@ -60,7 +59,7 @@ public class Account  {
     @JsonIgnore
     private Upload uploads;
 
-    @OneToOne
+    @OneToOne( mappedBy = "account")   //nieuw
     @JsonIgnore
     private User user;
 
@@ -71,26 +70,8 @@ public class Account  {
 
 
 
-    //VERGELIJKING
-    @Override
 
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Account account = (Account) o;
-        return   Objects.equals(id, account.id) &&  Objects.equals(userInfo, account.userInfo) &&
-                Objects.equals(subscriptionInfo, account.subscriptionInfo ) && Objects.equals(email, account.email) &&
-                Objects.equals(comment, account.comment) && Objects.equals(subscription, account.subscription)
-                && Objects.equals(uploads, account.uploads ) && Objects.equals(user, account.user) ;
 
-    }
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userInfo, subscriptionInfo, email,comment, subscription, uploads, user);
     }
 
 
-    public Long getUsername() {
-        return null;
-    }
-}

@@ -50,13 +50,13 @@ public class SubscriptionController {
     }
 
     @PostMapping("/subscriptions")
-    public ResponseEntity<?> createSubscription(@Valid @RequestBody SubscriptionDto subscriptionDto, Long id, BindingResult br) {
+    public ResponseEntity<?> createSubscription(@Valid @RequestBody SubscriptionDto subscriptionDto, BindingResult br) {
         if (br.hasErrors()) {
             String errorString = getErrorString(br);
 
             return new ResponseEntity<>(errorString, HttpStatus.BAD_REQUEST);
         } else {
-            Long createdId = subscriptionService.createSubscription(subscriptionDto, id);
+            Long createdId = subscriptionService.createSubscription(subscriptionDto);
             URI uri = URI.create(ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/subscriptions/" + createdId)
