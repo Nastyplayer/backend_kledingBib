@@ -59,8 +59,9 @@ public class User {
   @JsonIgnore
  List<Order> order;
 
-  @OneToOne(targetEntity = Account.class, mappedBy = "user")
-    Account account;
+  @OneToOne    (cascade = CascadeType.ALL)      //(targetEntity = Account.class, mappedBy = "user") json- cascade ook
+   @JsonIgnore
+   private Account account;
 
 
   @OneToMany(
@@ -88,7 +89,10 @@ public class User {
         this.authorities.remove(authority);
     }
 
-   // public Collection<Object> getUser() {
+    public void addAuthority(Object username, String role_user) {
+    }
+
+    // public Collection<Object> getUser() {
   ///      return null;
  //   }
 

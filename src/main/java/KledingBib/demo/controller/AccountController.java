@@ -1,6 +1,8 @@
 package KledingBib.demo.controller;
 
 import KledingBib.demo.dto.AccountDto;
+import KledingBib.demo.models.Account;
+import KledingBib.demo.models.User;
 import KledingBib.demo.repository.AccountRepository;
 import KledingBib.demo.repository.SubscriptionRepository;
 import KledingBib.demo.service.AccountService;
@@ -33,6 +35,10 @@ public class AccountController {
     private EntityAction account;
     private final SubscriptionRepository subscriptionRepository;
     private final AccountRepository accountRepository;
+    private Account acountDto;
+    private User userService;
+//    private User userService;
+//     private AccountDto accounDto;
 
     public AccountController(AccountService accountService, UploadService uploadService , UserService userService,
                              SubscriptionRepository subscriptionRepository,
@@ -59,7 +65,8 @@ public class AccountController {
     }
 
     @PostMapping("/accounts")
-    public ResponseEntity<?> createAccount(@Valid @RequestBody AccountDto accountDto, BindingResult br) {
+
+        public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountDto accountDto, BindingResult br) {
         if (br.hasErrors()) {
             String errorString = getErrorString(br);
             //  return ResponseEntity.badRequest().body(errorString);
@@ -69,11 +76,10 @@ public class AccountController {
             URI uri = URI.create(ServletUriComponentsBuilder
                     // URI uri = ServletUriComponentsBuilder   //
                     .fromCurrentRequest()
-                   .path("/accounts/" + createdId)
+                   .path("/accounts/" + createdId).toUriString());
                     //.path("/{id}")
                     // .buildAndExpand(createdId)
                     // .toUri();
-                    .toUriString());
 
 
             return ResponseEntity.created(uri).body(createdId);  //build(); //

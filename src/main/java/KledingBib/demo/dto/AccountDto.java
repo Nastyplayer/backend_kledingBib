@@ -12,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
-
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,78 +37,37 @@ public class AccountDto {
     private String comment;
 
 
-//    public Upload getUpload() {
-//        return upload;
-//    }
-//
-//    public void setUpload(Upload upload) {
-//        this.upload = upload;
-//    }
 
     @JsonIncludeProperties({"url", "fileName", "textType"})
     private Upload upload;
 
 
-//    public Subscription getSubscription() {
-//        return subscription;
-//    }
-//
-//    public void setSubscription(Subscription subscription) {
-//        this.subscription = subscription;
-//    }
 
     @JsonIncludeProperties({"date", "type"})
     private Subscription subscription;
 
-    @JsonIncludeProperties({"username", "password", "apikey", "email","comment" })
+    @JsonIncludeProperties({"username", "password", "apikey", "email", "comment"})
     private User user;
-
-//    public AccountDto(String userInfo, String subscriptionInfo) {
-//        this.userInfo = userInfo;
-//        this.subscriptionInfo = subscriptionInfo;
-//
-//    }
 
 
     //VERGELIJKING
-    @Override
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AccountDto accountDto = (AccountDto) o;
-
-        return  Objects.equals(id, accountDto.id) &&   Objects.equals(userInfo, accountDto.userInfo) &&
-                Objects.equals(subscriptionInfo, accountDto.subscriptionInfo) && Objects.equals(subscription, accountDto.subscription) &&
-                Objects.equals(email, accountDto.email) && Objects.equals(comment, accountDto.comment) &&
-                Objects.equals(upload, accountDto.upload) && Objects.equals(user, accountDto.user);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userInfo, subscriptionInfo, email, comment, subscription, upload, user);
-    }
-
-  //  public Subscription[] getSubscriptions() {
-  //      return new Subscription[0];
- //   }
-
-
-//    public void setSubscriptionDto(SubscriptionDto transferAccountToAccountDto) {
-//    }
-
+//    @Override
 //
-//    public Subscription[] getSubscriptions() {
-//        return new Subscription[0];
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        AccountDto accountDto = (AccountDto) o;
+//
+//        return Objects.equals(id, accountDto.id) && Objects.equals(userInfo, accountDto.userInfo) &&
+//                Objects.equals(subscriptionInfo, accountDto.subscriptionInfo) && Objects.equals(subscription, accountDto.subscription) &&
+//                Objects.equals(email, accountDto.email) && Objects.equals(comment, accountDto.comment) &&
+//                Objects.equals(upload, accountDto.upload) && Objects.equals(user, accountDto.user);
+//
 //    }
 //
-//
-//    public User[] getUsers() {
-//        return new User[0];
-//    }
-//
-//    public Upload[] getUploads() {
-//        return new Upload[0];
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, userInfo, subscriptionInfo, email, comment, subscription, upload, user);
 //    }
 }
+

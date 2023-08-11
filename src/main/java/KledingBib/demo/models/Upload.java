@@ -33,25 +33,6 @@ public class Upload {
     }
 
 
-//    public Collection<Object> getUpload() {
-//        return null;
-//    }
-
-//    public Upload(String fileName, String contentType, String url) {
-//        this.fileName = fileName;
-//        this.contentType = contentType;
-//        this.url = url;
-//    }
-//
-//
-//    public Upload(String contentType) {
-//
-//        this.contentType = contentType;
-//    }
-//
-//    public Upload() {
-
-    //   }
 
   ////////////////////////////////////////////
 

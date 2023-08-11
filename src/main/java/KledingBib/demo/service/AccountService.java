@@ -4,7 +4,6 @@ import KledingBib.demo.dto.AccountDto;
 import KledingBib.demo.exceptions.RecordNotFoundException;
 import KledingBib.demo.models.Account;
 import KledingBib.demo.models.Email;
-import KledingBib.demo.models.Subscription;
 import KledingBib.demo.models.User;
 import KledingBib.demo.repository.*;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,8 @@ public class AccountService {
     private final SubscriptionService subscriptionService;
     private Account savedaccount;
     private UserService userDto;
+    private Long savedUser;
+    private java.lang.String String;
 
 
     public AccountService(AccountRepository accountRepository, UserRepository userRepository, ItemRepository itemRepository,
@@ -57,7 +58,7 @@ public class AccountService {
         }
 
 
-        return   accountDtos;
+        return accountDtos;
 
 
     }
@@ -80,36 +81,14 @@ public class AccountService {
     public Long createAccount(AccountDto accountDto) {
 
 
-
         Account newAccount;
         newAccount = transferAccountDtoToAccount(accountDto);
         Account savedAccount = accountRepository.save(newAccount);
 
- ///////       nieuw///////
-        Subscription Expire = new Subscription(Subscription.SubscriptionStatus.EXPIRE);
-        Subscription newExpire = subscriptionRepository.save(Expire);
-        newExpire.setAccount(savedaccount);
 
-        Subscription Active = new Subscription(Subscription.SubscriptionStatus.ACTIVE);
-        Subscription newActive = subscriptionRepository.save(Active);
-        newActive.setAccount(savedaccount);
+        assignAccountToUser(String, savedUser);   ////nieuw
 
-        Subscription Canceled = new Subscription(Subscription.SubscriptionStatus.CANCELED);
-        Subscription newCanceled = subscriptionRepository.save(Canceled);
-        newCanceled.setAccount(savedaccount);
-
-//        addOrderToAccount(accountDto, savedAccount);
- //       addSubscriptionToAccount(accountDto, savedAccount);
-//        addUploadToAccount(accountDto, savedAccount);
-//        addUserToAccount(accountDto, savedAccount);
-        User newUser = new User();
-        userRepository.save(newUser);
-        accountRepository.save(newAccount);
-        assignAccountToUser(newUser.getUsername(), newAccount.getUsername());
-        accountRepository.save(newAccount);
-        userRepository.save(newUser);
-
-        Email email = new Email("ormenojavier452@gmail.com", "Er is een nieuw verzonden");
+        Email email = new Email("ormenojavier452@gmail.com", "Er is een email verzonden");
         this.emailService.sendMail(email);
 
         return savedAccount.getId();
@@ -118,12 +97,12 @@ public class AccountService {
 
     ////////////////////////////////////////////////////
 
-    // PutMapping, method for changing a (whole)account
+    // PutMapping, method for changing a (whole)
     public AccountDto putAccount(Long id, AccountDto accountDto) {
         if (accountRepository.findById(id).isPresent()) {
             Account accountToChange = accountRepository.findById(id).get();
             Account account1 = transferAccountDtoToAccount(accountDto);
-           account1.setId(accountToChange.getId());
+            account1.setId(accountToChange.getId());
 
             accountRepository.save(account1);
             return transferAccountToAccountDto(account1);
@@ -136,7 +115,7 @@ public class AccountService {
     //////////////////////////////////////////////////////
 
 
-    // Patchmapping, method for changing parts of a Account
+    // Patchmapping, method for changing parts
 
     public AccountDto patchAccount(Long id, AccountDto accountDto) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
@@ -173,22 +152,24 @@ public class AccountService {
 
 
     ///////////////////////////////////////////////////////////
-    // DeleteMapping, method for deleting a acount
+    // DeleteMapping, method for deleting
     public String deleteById(Long id) {
         if (accountRepository.existsById(id)) {
             Optional<Account> deletedAccount = accountRepository.findById(id);
             Account account1 = deletedAccount.get();
 
             // deleting upload, subscriptions  first
-        //    for (Upload upload : account1.getUploads()) {
-            //   Upload upload = account1.getUpload();
-             //   uploadRepository.delete(upload);
-       //     }
-            Subscription subscription = account1.getSubscription();
 
-           // for (Subscription subscription : account1.getSubscriptions()) {
-                subscriptionRepository.delete(subscription);
-       //     }
+            //    for (Upload upload : account1.getUploads()) {
+            //   Upload upload = account1.getUpload();
+            //   uploadRepository.delete(upload);
+            //     }
+//            Subscription subscription = account1.getSubscription();
+//
+//            for (Subscription : account1.getSubscriptions()) {
+//            Subscription subscription = account1.getSubscription();
+//                subscriptionRepository.delete(subscription);
+//           }
 
             accountRepository.delete(account1);
             return "Account with id: " + id + " deleted.";
@@ -210,9 +191,10 @@ public class AccountService {
 //             accountRepository.save(account);
 //       }
 //    }
-    public void assignAccountToUser(String id, Long accountId) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        Optional<Account> optionalAccount = accountRepository.findById(accountId);
+    public void assignAccountToUser(String id, Long accountId) {     ////nieuw username String id,, Long accountId
+        Optional<User> optionalUser = userRepository.findById(id);                        ///// nieuw username
+        Optional<Account> optionalAccount = accountRepository.findById(accountId);  //  nieuw
+
         if (optionalUser.isPresent() && optionalAccount.isPresent()) {
             User user = optionalUser.get();
             Account account = optionalAccount.get();
@@ -221,7 +203,8 @@ public class AccountService {
         } else {
             throw new RecordNotFoundException();
 
-        }}
+        }
+}
 
     //  methods
     //
@@ -233,6 +216,7 @@ public class AccountService {
         accountDto.setSubscriptionInfo(account.getSubscriptionInfo());
         accountDto.setEmail(account.getEmail());
         accountDto.setComment(account.getComment());
+        accountDto.setUser(account.getUser());
 //
         if (account.getUserInfo() != null) {
             accountDto.setUserInfo(account.getUserInfo());
@@ -266,6 +250,12 @@ public class AccountService {
 
         return account;
     }
+//
+
+
+
+}
+
 
 
 /////////////////////////
@@ -338,9 +328,20 @@ public class AccountService {
 //                userRepository.save(user);
 //            }
 //        }
- //   }
-}
+////////////////////////////////////////////////
 
+ //   public void assignAccountToUser(String id, String accountId) {
+//        Optional<User> optionalUser = userRepository.findById(id);
+//        Optional<Account> optionalAccount = accountRepository.findById(accountId);
+//        if (optionalUser.isPresent() && optionalAccount.isPresent()) {
+//            User user = optionalUser.get();
+//            Account account = optionalAccount.get();
+//            account.setUser(user);
+//            accountRepository.save(account);
+//        } else {
+//            throw new RecordNotFoundException();
+//
+//        }}
 
 
 
